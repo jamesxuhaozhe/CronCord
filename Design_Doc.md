@@ -55,4 +55,8 @@ system. The system will contain a front-end displaying the GUI that the end user
 
 * `Log store` a distributed data store to store job execution logs
 
+### 3.2 Architecture Diagram
+![](design.jpg)
 
+### 3.3 Implementation Module Diagram
+![](module.jpg)
