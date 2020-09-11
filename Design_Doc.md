@@ -43,6 +43,16 @@ is not uncommon to see lengthy shell scripting that it makes sense to save them 
 On a high level, the system adopts a master-worker architecture which is a classic route for building distributed
 system. The system will contain a front-end displaying the GUI that the end user can perform action via. 
 
-TODO
+### 3.1 Principle architecture components
+
+* `GUI web front end` provides end user interface to use the system
+
+* `Master` directly serves the web front end and interact with data source
+
+* `Metadata store` a distributed data store job information and worker node information, also serves as the service discovery centor
+
+* `Worker` contains multiple worker nodes that do all the execution and planning. 
+
+* `Log store` a distributed data store to store job execution logs
 
 
