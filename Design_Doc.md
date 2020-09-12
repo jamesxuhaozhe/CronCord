@@ -60,3 +60,4 @@ system. The system will contain a front-end displaying the GUI that the end user
 
 ### 3.3 Implementation Module Diagram
 ![](module.jpg)
+
