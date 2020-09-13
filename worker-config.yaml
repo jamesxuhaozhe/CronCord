@@ -1,0 +1,11 @@
+etcd:
+  endpoint: 127.0.0.1:2379
+  dial_timeout: 5000
+
+mongodb:
+  endpoint: mongodb://127.0.0.1:27017
+  connection_timeout: 5000
+
+logsave:
+  batch_size: 20 # try to save the round trip time
+  commit_timeout: 1000 # log will auto commit even the batch size doesn't reach
