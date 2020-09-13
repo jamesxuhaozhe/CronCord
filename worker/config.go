@@ -17,6 +17,7 @@ type Config struct {
 	JobLogCommitTimeout   int
 }
 
+// WorkerConfig is a global singleton.
 var WorkerConfig *Config
 
 func InitConfig(filePath string) error {
@@ -29,7 +30,7 @@ func InitConfig(filePath string) error {
 	viper.SetConfigType("yaml")
 	viper.SetConfigType("yaml")
 	viper.AutomaticEnv()              // read the match env var
-	viper.SetEnvPrefix("CRON_WORKER") // read the env var whose prefix starts with APISERVER
+	viper.SetEnvPrefix("CRON_WORKER") // read the env var whose prefix starts with CRON_WORKER
 	replacer := strings.NewReplacer(".", "_")
 	viper.SetEnvKeyReplacer(replacer)
 	if err := viper.ReadInConfig(); err != nil {
