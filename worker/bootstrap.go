@@ -15,5 +15,15 @@ func InitWorker(filePath string) error {
 		return err
 	}
 
+	if err := InitExecutor(); err != nil {
+		return err
+	}
+
+	// todo init scheduler
+
+	if err := InitJobManager(); err != nil {
+		return err
+	}
+
 	return nil
 }
