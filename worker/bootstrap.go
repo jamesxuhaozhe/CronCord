@@ -11,6 +11,11 @@ func InitWorker(filePath string) error {
 		return err
 	}
 
+	if err := InitLogSink(); err != nil {
+		return err
+	}
+
+
 
 
 
