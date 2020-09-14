@@ -10,5 +10,9 @@ func InitWorker(filePath string) error {
 	if err := InitRegister(); err != nil {
 		return err
 	}
+
+
+
+
 	return nil
 }
