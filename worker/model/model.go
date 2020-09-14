@@ -52,3 +52,19 @@ type JobEvent struct {
 	EventType int //  SAVE, DELETE
 	Job       *Job
 }
+
+const (
+	JobEventSave = 1
+
+	JobEventDelete = 2
+
+	JobEventKill = 3
+
+	JobSaveDir = "/croncord/jobs/"
+
+	JobKillerDir = "/croncord/killer/"
+
+	JobLockDir = "/croncord/lock/"
+
+	JobWorkerDir = "/croncord/workers/"
+)

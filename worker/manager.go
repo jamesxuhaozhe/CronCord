@@ -6,6 +6,7 @@ import (
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/mvcc/mvccpb"
 	"github.com/jamesxuhaozhe/croncord/worker/model"
+	"strings"
 	"time"
 )
 
@@ -81,10 +82,40 @@ func (djm *DefaultJobManager) watchJobEvents() error {
 
 	for _, kvpair = range getResp.Kvs {
 		if job, err = unpackJob(kvpair.Value); err == nil {
+			jobEvent = buildJobEvent(model.JobEventSave, job)
+			// TODO need to push the even to scheduler
 
 		}
 	}
 
+	go func() {
+
+		watchStartRevision = getResp.Header.Revision + 1
+
+		watchChan = djm.watcher.Watch(context.TODO(), model.JobSaveDir, clientv3.WithRev(watchStartRevision), clientv3.WithPrefix())
+
+		for watchResp = range watchChan {
+			for _, watchEvent = range watchResp.Events {
+				switch watchEvent.Type {
+				case mvccpb.PUT:
+					if job, err = unpackJob(watchEvent.Kv.Value); err != nil {
+						continue
+					}
+					jobEvent = buildJobEvent(model.JobEventSave, job)
+				case mvccpb.DELETE:
+					jobName = extractJobName(string(watchEvent.Kv.Key))
+
+					job = &model.Job{Name:jobName}
+
+					jobEvent = buildJobEvent(model.JobEventDelete, job)
+				}
+
+				// todo need to push the event to scheduler
+
+			}
+		}
+	}()
+	return nil
 }
 
 func unpackJob(value []byte) (*model.Job, error) {
@@ -96,8 +127,49 @@ func unpackJob(value []byte) (*model.Job, error) {
 	return job, nil
 }
 
+func buildJobEvent(eventType int, job *model.Job) (jobEvent *model.JobEvent) {
+	return &model.JobEvent{
+		EventType: eventType,
+		Job: job,
+	}
+}
+
+func extractJobName(jobKey string) string {
+	return strings.TrimPrefix(jobKey, model.JobSaveDir)
+}
+
+func extractKillerName(killerKey string) string {
+	return strings.TrimPrefix(killerKey, model.JobKillerDir)
+}
+
 func (djm *DefaultJobManager) watchKillEvents() error {
-	panic("implement me")
+	var (
+		watchChan clientv3.WatchChan
+		watchResp clientv3.WatchResponse
+		watchEvent *clientv3.Event
+		jobEvent *model.JobEvent
+		jobName string
+		job *model.Job
+	)
+
+	go func() {
+
+		watchChan = djm.watcher.Watch(context.TODO(), model.JobKillerDir, clientv3.WithPrefix())
+		for watchResp = range watchChan {
+			for _, watchEvent = range watchResp.Events {
+				switch watchEvent.Type {
+				case mvccpb.PUT:
+					jobName = extractKillerName(string(watchEvent.Kv.Key))
+					job = &model.Job{Name:jobName}
+					jobEvent = buildJobEvent(model.JobEventKill, job)
+					// todo need to push this even to scheduler
+					case mvccpb.DELETE:
+
+				}
+			}
+		}
+	}()
+	return nil
 }
 
 func (djm *DefaultJobManager) createLock(jobName string) DistributedLock {
