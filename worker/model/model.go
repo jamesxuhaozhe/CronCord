@@ -1,5 +1,10 @@
 package model
 
+import (
+	"context"
+	"time"
+)
+
 // JobLog is data carrier for the log for job
 type JobLog struct {
 	JobName string `json:"jobName" bson:"jobName"` // job name
@@ -15,4 +20,29 @@ type JobLog struct {
 // LogBatch
 type LogBatch struct {
 	Logs []interface{}	// multiple logs
+}
+
+// Job is a cron job
+type Job struct {
+	Name string `json:"name"`	//  job name
+	Command string	`json:"command"` // shell command
+	CronExpr string	`json:"cronExpr"`	// cron expression
+}
+
+// JobExecuteInfo wraps around job and has its meta information
+type JobExecuteInfo struct {
+	Job *Job // actual job
+	PlanTime time.Time // planned exec time in theory
+	RealTime time.Time // actual exec time
+	CancelCtx context.Context // context
+	CancelFunc context.CancelFunc//  used to cancel the exec
+}
+
+// JobExecuteResult
+type JobExecuteResult struct {
+	ExecuteInfo *JobExecuteInfo
+	Output []byte // job output
+	Err error // err
+	StartTime time.Time // start time
+	EndTime time.Time // end time
 }
