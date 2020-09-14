@@ -6,12 +6,13 @@ import (
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/mvcc/mvccpb"
 	"github.com/jamesxuhaozhe/croncord/worker/model"
+	"time"
 )
 
 type JobManager interface {
 	watchJobEvents() error
 	watchKillEvents() error
-	createLock() DistributedLock
+	createLock(jobName string) DistributedLock
 }
 
 type DefaultJobManager struct {
@@ -22,6 +23,43 @@ type DefaultJobManager struct {
 }
 
 var WorkerJobManager JobManager
+
+func InitJobManager() error {
+	var (
+		config clientv3.Config
+		client *clientv3.Client
+		kv clientv3.KV
+		lease clientv3.Lease
+		watcher clientv3.Watcher
+		err error
+	)
+
+	config = clientv3.Config{
+		Endpoints:WorkerConfig.EtcdEndpoints,
+		DialTimeout:time.Duration(WorkerConfig.EtcdDialTimeout) * time.Millisecond,
+	}
+
+	if client, err = clientv3.New(config); err != nil {
+		return err
+	}
+
+	kv = clientv3.NewKV(client)
+	lease = clientv3.NewLease(client)
+	watcher = clientv3.NewWatcher(client)
+
+	WorkerJobManager = &DefaultJobManager{
+		client:  client,
+		kv:      kv,
+		lease:   lease,
+		watcher: watcher,
+	}
+
+	WorkerJobManager.watchJobEvents()
+
+	WorkerJobManager.watchKillEvents()
+
+	return err
+}
 
 func (djm *DefaultJobManager) watchJobEvents() error {
 	var (
@@ -63,8 +101,9 @@ func (djm *DefaultJobManager) watchKillEvents() error {
 	panic("implement me")
 }
 
-func (djm *DefaultJobManager) createLock() DistributedLock {
-	panic("implement me")
+func (djm *DefaultJobManager) createLock(jobName string) DistributedLock {
+	lock := InitJobLock(jobName, djm.kv, djm.lease)
+	return lock
 }
 
 
