@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"github.com/gorhill/cronexpr"
 	"time"
 )
 
@@ -45,6 +46,12 @@ type JobExecuteResult struct {
 	Err         error     // err
 	StartTime   time.Time // start time
 	EndTime     time.Time // end time
+}
+
+type JobSchedulePlan struct {
+	Job *Job
+	Expr *cronexpr.Expression
+	NextTime time.Time
 }
 
 // JobEvent
