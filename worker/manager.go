@@ -1,6 +1,8 @@
 package worker
 
 import (
+	"context"
+	"encoding/json"
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/mvcc/mvccpb"
 	"github.com/jamesxuhaozhe/croncord/worker/model"
@@ -32,7 +34,29 @@ func (djm *DefaultJobManager) watchJobEvents() error {
 		watchEvent *clientv3.Event
 		jobName string
 		jobEvent *model.JobEvent
+		err error
 	)
+
+	if getResp, err = djm.kv.Get(context.TODO(), "/croncord/jobs/", clientv3.WithPrefix()); err != nil {
+		return err
+	}
+
+	for _, kvpair = range getResp.Kvs {
+		if job, err = unpackJob(kvpair.Value); err == nil {
+
+		}
+	}
+
+
+}
+
+func unpackJob(value []byte) (*model.Job, error) {
+	job := &model.Job{}
+	var err error
+	if err = json.Unmarshal(value, job); err != nil {
+		return nil, err
+	}
+	return job, nil
 }
 
 func (djm *DefaultJobManager) watchKillEvents() error {

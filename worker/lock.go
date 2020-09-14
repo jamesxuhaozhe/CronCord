@@ -59,7 +59,7 @@ func (e *EtcdLock) TryLock() error {
 
 	txn = e.kv.Txn(context.TODO())
 
-	lockKey = "/cron/lock/" + e.jobName
+	lockKey = "/croncord/lock/" + e.jobName
 
 	txn.If(clientv3.Compare(clientv3.CreateRevision(lockKey), "=", 0)).
 		Then(clientv3.OpPut(lockKey, "", clientv3.WithLease(leaseId))).
