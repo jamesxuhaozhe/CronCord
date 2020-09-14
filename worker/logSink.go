@@ -15,7 +15,7 @@ type MongoLogSink struct {
 	autoCommitChan chan *model.LogBatch
 }
 
-var WorkerLogSink *MongoLogSink
+var WorkerLogSink LogSink
 
 type LogSink interface {
 	saveLogs(batch *model.LogBatch)

@@ -46,3 +46,9 @@ type JobExecuteResult struct {
 	StartTime time.Time // start time
 	EndTime time.Time // end time
 }
+
+// JobEvent
+type JobEvent struct {
+	EventType int //  SAVE, DELETE
+	Job *Job
+}

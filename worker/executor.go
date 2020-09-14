@@ -17,7 +17,6 @@ type Executor interface {
 
 var WorkerExecutor *DefaultExecutor
 
-
 func (exe *DefaultExecutor) Execute(jobInfo *model.JobExecuteInfo) {
 	go func() {
 
