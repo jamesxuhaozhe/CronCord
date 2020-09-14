@@ -2,9 +2,9 @@ package worker
 
 import (
 	"errors"
-	"fmt"
 	"github.com/coreos/etcd/clientv3"
 	"net"
+	"time"
 )
 
 type Register struct {
@@ -33,11 +33,35 @@ func getLocalIP() (ipv4 string, err error) {
 	return "", errors.New("local ip not found")
 }
 
-func InitRegister() error {
-	if ip, err := getLocalIP(); err != nil {
-		return err
-	} else {
-		fmt.Printf("local ip: %s\n", ip)
-		return nil
+// InitRegister register the worker node to the etcd config center
+func InitRegister() (err error) {
+
+	// init etcd client config
+	config := clientv3.Config{
+		Endpoints:            WorkerConfig.EtcdEndpoints,
+		DialTimeout:          time.Duration(WorkerConfig.EtcdDialTimeout) * time.Millisecond,
 	}
+
+	// init the etcd client
+	var client *clientv3.Client
+	if client, err = clientv3.New(config); err != nil {
+		return err
+	}
+
+	var localIP string
+	if localIP, err = getLocalIP(); err != nil {
+		return err
+	}
+
+	kv := clientv3.NewKV(client)
+	lease := clientv3.NewLease(client)
+
+	WorkerRegister = &Register{
+		client:  client,
+		kv:      kv,
+		lease:   lease,
+		localIP: localIP,
+	}
+
+	return nil
 }
