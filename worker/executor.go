@@ -25,15 +25,18 @@ func (exe *DefaultExecutor) Execute(jobInfo *model.JobExecuteInfo) {
 			Output:      make([]byte, 0),
 		}
 
-		jobLock :=
+		jobLock := WorkerJobManager.createLock(jobInfo.Job.Name)
 
 		// record the job start time
-			result.StartTime = time.Now()
+		result.StartTime = time.Now()
 
 		// give some random time
 		time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
 
 		// try lock and defer unlock
+		err := jobLock.TryLock()
+		defer jobLock.Unlock()
+
 		if err != nil {
 			result.Err = err
 			result.EndTime = time.Now()
