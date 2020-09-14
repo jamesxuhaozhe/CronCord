@@ -27,7 +27,7 @@ func (exe *DefaultExecutor) Execute(jobInfo *model.JobExecuteInfo) {
 			Output:      make([]byte, 0),
 		}
 
-		// TODO create the joblock
+		jobLock :=
 
 		// record the job start time
 		result.StartTime = time.Now()
@@ -47,6 +47,7 @@ func (exe *DefaultExecutor) Execute(jobInfo *model.JobExecuteInfo) {
 			cmd := exec.CommandContext(jobInfo.CancelCtx, "/bin/bash", "-c", jobInfo.Job.Command)
 
 			// catch the output
+			var output []byte
 			output, err = cmd.CombinedOutput()
 
 			// record the time
