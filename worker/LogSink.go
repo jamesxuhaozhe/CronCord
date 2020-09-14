@@ -27,7 +27,7 @@ func InitLogSink() (err error) {
 	var client *mongo.Client
 
 	opt := new(options.ClientOptions)
-	opt.SetConnectTimeout(time.Duration(WorkerConfig.MongodbConnectTimeout))
+	opt.SetConnectTimeout(time.Duration(WorkerConfig.MongodbConnectTimeout) * time.Millisecond)
 	// init mongodb connection
 	if client, err = mongo.Connect(context.TODO(),
 		options.Client().ApplyURI(WorkerConfig.MongodbUri),
