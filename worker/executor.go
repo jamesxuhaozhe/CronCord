@@ -8,7 +8,6 @@ import (
 )
 
 type DefaultExecutor struct {
-
 }
 
 type Executor interface {
@@ -29,7 +28,7 @@ func (exe *DefaultExecutor) Execute(jobInfo *model.JobExecuteInfo) {
 		jobLock :=
 
 		// record the job start time
-		result.StartTime = time.Now()
+			result.StartTime = time.Now()
 
 		// give some random time
 		time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
@@ -64,7 +63,3 @@ func InitExecutor() error {
 	WorkerExecutor = &DefaultExecutor{}
 	return nil
 }
-
-
-
-

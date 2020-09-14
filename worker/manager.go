@@ -16,9 +16,9 @@ type JobManager interface {
 }
 
 type DefaultJobManager struct {
-	client *clientv3.Client
-	kv clientv3.KV
-	lease clientv3.Lease
+	client  *clientv3.Client
+	kv      clientv3.KV
+	lease   clientv3.Lease
 	watcher clientv3.Watcher
 }
 
@@ -26,17 +26,17 @@ var WorkerJobManager JobManager
 
 func InitJobManager() error {
 	var (
-		config clientv3.Config
-		client *clientv3.Client
-		kv clientv3.KV
-		lease clientv3.Lease
+		config  clientv3.Config
+		client  *clientv3.Client
+		kv      clientv3.KV
+		lease   clientv3.Lease
 		watcher clientv3.Watcher
-		err error
+		err     error
 	)
 
 	config = clientv3.Config{
-		Endpoints:WorkerConfig.EtcdEndpoints,
-		DialTimeout:time.Duration(WorkerConfig.EtcdDialTimeout) * time.Millisecond,
+		Endpoints:   WorkerConfig.EtcdEndpoints,
+		DialTimeout: time.Duration(WorkerConfig.EtcdDialTimeout) * time.Millisecond,
 	}
 
 	if client, err = clientv3.New(config); err != nil {
@@ -63,16 +63,16 @@ func InitJobManager() error {
 
 func (djm *DefaultJobManager) watchJobEvents() error {
 	var (
-		getResp *clientv3.GetResponse
-		kvpair *mvccpb.KeyValue
-		job *model.Job
+		getResp            *clientv3.GetResponse
+		kvpair             *mvccpb.KeyValue
+		job                *model.Job
 		watchStartRevision int64
-		watchChan clientv3.WatchChan
-		watchResp clientv3.WatchResponse
-		watchEvent *clientv3.Event
-		jobName string
-		jobEvent *model.JobEvent
-		err error
+		watchChan          clientv3.WatchChan
+		watchResp          clientv3.WatchResponse
+		watchEvent         *clientv3.Event
+		jobName            string
+		jobEvent           *model.JobEvent
+		err                error
 	)
 
 	if getResp, err = djm.kv.Get(context.TODO(), "/croncord/jobs/", clientv3.WithPrefix()); err != nil {
@@ -84,7 +84,6 @@ func (djm *DefaultJobManager) watchJobEvents() error {
 
 		}
 	}
-
 
 }
 
@@ -105,7 +104,3 @@ func (djm *DefaultJobManager) createLock(jobName string) DistributedLock {
 	lock := InitJobLock(jobName, djm.kv, djm.lease)
 	return lock
 }
-
-
-
-

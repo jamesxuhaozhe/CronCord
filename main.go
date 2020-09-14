@@ -9,7 +9,7 @@ import (
 
 var (
 	role = pflag.StringP("mode", "m", "", "define deploy mode, either master or worker, like -m=master or -m=worker")
-	cfg = pflag.StringP("config", "c", "", "worker config file path. like -c=./config.yaml")
+	cfg  = pflag.StringP("config", "c", "", "worker config file path. like -c=./config.yaml")
 )
 
 func main() {

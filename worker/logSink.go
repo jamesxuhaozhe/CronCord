@@ -81,7 +81,7 @@ func (logSink *MongoLogSink) writeLoop() {
 				logBatch = nil
 				commitTimer.Stop()
 			}
-		case timeoutBatch = <- logSink.autoCommitChan:
+		case timeoutBatch = <-logSink.autoCommitChan:
 			if timeoutBatch != logBatch {
 				continue
 			}

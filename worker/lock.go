@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/coreos/etcd/clientv3"
 )
+
 type DistributedLock interface {
 	TryLock() error
 	Unlock() error
@@ -84,7 +85,7 @@ FAIL:
 	return err
 }
 
-func (e *EtcdLock) Unlock() error{
+func (e *EtcdLock) Unlock() error {
 	if e.isLocked {
 		e.cancelFunc()
 		if _, err := e.lease.Revoke(context.TODO(), e.leaseId); err != nil {
@@ -102,4 +103,3 @@ func InitJobLock(jobName string, kv clientv3.KV, lease clientv3.Lease) Distribut
 	}
 	return lock
 }
-
